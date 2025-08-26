@@ -9,7 +9,15 @@
           <div class="row mb-3">
             <div class="col-6">
               <label for="username" class="form-label">Username</label>
-              <input type="text" class="form-control" id="username" v-model="formData.username" />
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                @blur="() => validateName(true)"
+                @input="() => validateName(false)"
+                v-model="formData.username"
+              />
+              <div v-if="errors.username" class="text-danger">{{ errors.username }}</div>
             </div>
 
             <!-- Password -->
@@ -19,9 +27,12 @@
                 type="password"
                 class="form-control"
                 id="password"
+                @blur="() => validatePassword(true)"
+                @input="() => validatePassword(false)"
                 v-model="formData.password"
               />
             </div>
+            <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
           </div>
 
           <!-- Checkbox & Gender -->
@@ -32,20 +43,30 @@
                   type="checkbox"
                   class="form-check-input"
                   id="isAustralian"
+                  @blur="() => validateResident(true)"
+                  @input="() => validateResident(false)"
                   v-model="formData.isAustralian"
                 />
                 <label class="form-check-label" for="isAustralian"> Australian Resident? </label>
               </div>
+              <div v-if="errors.resident" class="text-danger">{{ errors.resident }}</div>
             </div>
 
             <div class="col-6">
               <label for="gender" class="form-label">Gender</label>
-              <select class="form-select" id="gender" v-model="formData.gender">
+              <select
+                class="form-select"
+                id="gender"
+                @blur="() => validateGender(true)"
+                @input="() => validateGender(false)"
+                v-model="formData.gender"
+              >
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Other</option>
               </select>
             </div>
+            <div v-if="errors.gender" class="text-danger">{{ errors.gender }}</div>
           </div>
 
           <!-- Reason -->
@@ -55,9 +76,12 @@
               class="form-control"
               id="reason"
               rows="3"
+              @blur="() => validateReason(true)"
+              @input="() => validateReason(false)"
               v-model="formData.reason"
             ></textarea>
           </div>
+          <div v-if="errors.reason" class="text-danger">{{ errors.reason }}</div>
 
           <!-- Buttons -->
           <div class="text-center">
@@ -69,7 +93,7 @@
     </div>
   </div>
 
-  <div class="row mt-5" v-if="submittedCards.length">
+  <!-- <div class="row mt-5" v-if="submittedCards.length">
     <div class="d-flex flex-wrap justify-content-start">
       <div
         v-for="(card, index) in submittedCards"
@@ -89,10 +113,30 @@
         </ul>
       </div>
     </div>
+  </div> -->
+
+  <!-- PrimeVue DataTable instead of Bootstrap cards -->
+  <div class="row mt-5" v-if="submittedCards.length">
+    <DataTable :value="submittedCards" tableStyle="min-width: 60rem">
+      <Column field="username" header="Username"></Column>
+      <Column field="password" header="Password"></Column>
+      <Column
+        field="isAustralian"
+        header="Australian Resident"
+        :body="(res) => (res.isAustralian ? 'Yes' : 'No')"
+      ></Column>
+      <Column field="gender" header="Gender"></Column>
+      <Column field="reason" header="Reason"></Column>
+    </DataTable>
   </div>
 </template>
 
 <script setup>
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+// import ColumnGroup from 'primevue/columngroup' // optional
+// import Row from 'primevue/row' // optional
+
 import { ref } from 'vue'
 
 const formData = ref({
@@ -106,9 +150,21 @@ const formData = ref({
 const submittedCards = ref([])
 
 const submitForm = () => {
-  submittedCards.value.push({
-    ...formData.value,
-  })
+  validateName(true)
+  validatePassword(true)
+  validateResident(true)
+  validateGender(true)
+  validateReason(true)
+  if (
+    !errors.value.username &&
+    !errors.value.password &&
+    !errors.value.resident &&
+    !errors.value.gender &&
+    !errors.value.reason
+  ) {
+    submittedCards.value.push({ ...formData.value })
+    clearForm()
+  }
 }
 
 const clearForm = () => {
@@ -119,17 +175,86 @@ const clearForm = () => {
     reason: '',
     gender: '',
   }
+}
 
-  submittedCards.value = [] // reset cards as well
+const errors = ref({
+  username: null,
+  password: null,
+  resident: null,
+  gender: null,
+  reason: null,
+})
+
+const validateName = (blur) => {
+  if (formData.value.username.length < 3) {
+    if (blur) errors.value.username = 'Name must be at least 3 characters'
+  } else {
+    errors.value.username = null
+  }
+}
+
+const validatePassword = (blur) => {
+  const password = formData.value.password
+  const minLength = 8
+  const hasUppercase = /[A-Z]/.test(password)
+  const hasLowercase = /[a-z]/.test(password)
+  const hasNumber = /\d/.test(password)
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password)
+
+  if (password.length < minLength) {
+    if (blur) errors.value.password = `Password must be at least ${minLength} characters long.`
+  } else if (!hasUppercase) {
+    if (blur) errors.value.password = `Password must contain at least one uppercase letter.`
+  } else if (!hasLowercase) {
+    if (blur) errors.value.password = `Password must contain at least one lowercase letter.`
+  } else if (!hasNumber) {
+    if (blur) errors.value.password = `Password must contain at least one number.`
+  } else if (!hasSpecialChar) {
+    if (blur) errors.value.password = `Password must contain at least one special character.`
+  } else {
+    errors.value.password = null
+  }
+}
+
+const validateResident = (blur) => {
+  if (!formData.value.isAustralian) {
+    if (blur) errors.value.resident = 'You must be an Australian resident.'
+  } else {
+    errors.value.resident = null
+  }
+}
+
+const validateGender = (blur) => {
+  if (!formData.value.gender) {
+    if (blur) errors.value.gender = 'Gender must be selected.'
+  } else {
+    errors.value.gender = null
+  }
+}
+
+const validateReason = (blur) => {
+  const reason = formData.value.reason
+  const minLength = 3
+  const maxLength = 250
+
+  if (!reason) {
+    if (blur) errors.value.reason = 'Reason for joining must be entered.'
+  } else if (reason.length < minLength) {
+    if (blur) errors.value.reason = `Reason must be at least ${minLength} characters long.`
+  } else if (reason.length > maxLength) {
+    if (blur) errors.value.reason = `Reason must be no more than ${maxLength} characters long.`
+  } else {
+    errors.value.reason = null
+  }
 }
 </script>
 
 <style scoped>
-.card {
+/* .card {
   border: 1px solid #ccc;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+} */
 .card-header {
   background-color: #275fda;
   color: white;
