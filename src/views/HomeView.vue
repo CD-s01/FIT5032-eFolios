@@ -20,38 +20,6 @@
               <div v-if="errors.username" class="text-danger">{{ errors.username }}</div>
             </div>
 
-            <!-- Password -->
-            <div class="col-6">
-              <label for="password" class="form-label">Password</label>
-              <input
-                type="password"
-                class="form-control"
-                id="password"
-                @blur="() => validatePassword(true)"
-                @input="() => validatePassword(false)"
-                v-model="formData.password"
-              />
-            </div>
-            <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
-          </div>
-
-          <!-- Checkbox & Gender -->
-          <div class="row mb-3">
-            <div class="col-6">
-              <div class="form-check">
-                <input
-                  type="checkbox"
-                  class="form-check-input"
-                  id="isAustralian"
-                  @blur="() => validateResident(true)"
-                  @input="() => validateResident(false)"
-                  v-model="formData.isAustralian"
-                />
-                <label class="form-check-label" for="isAustralian"> Australian Resident? </label>
-              </div>
-              <div v-if="errors.resident" class="text-danger">{{ errors.resident }}</div>
-            </div>
-
             <div class="col-6">
               <label for="gender" class="form-label">Gender</label>
               <select
@@ -69,6 +37,55 @@
             <div v-if="errors.gender" class="text-danger">{{ errors.gender }}</div>
           </div>
 
+          <!-- Checkbox & Gender -->
+
+          <div class="row mb-3">
+            <!-- Password -->
+            <div class="col-6">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                @blur="() => validatePassword(true)"
+                @input="() => validatePassword(false)"
+                v-model="formData.password"
+              />
+              <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
+            </div>
+
+            <div class="col-md-6 col-sm-6">
+              <label for="confirm-password" class="form-label">Confirm password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="confirm-password"
+                v-model="formData.confirmPassword"
+                @blur="() => validateConfirmPassword(true)"
+              />
+              <div v-if="errors.confirmPassword" class="text-danger">
+                {{ errors.confirmPassword }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-6">
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="isAustralian"
+                  @blur="() => validateResident(true)"
+                  @input="() => validateResident(false)"
+                  v-model="formData.isAustralian"
+                />
+                <label class="form-check-label" for="isAustralian"> Australian Resident? </label>
+              </div>
+              <div v-if="errors.resident" class="text-danger">{{ errors.resident }}</div>
+            </div>
+          </div>
+
           <!-- Reason -->
           <div class="mb-3">
             <label for="reason" class="form-label">Reason for joining</label>
@@ -80,8 +97,9 @@
               @input="() => validateReason(false)"
               v-model="formData.reason"
             ></textarea>
+            <div v-if="errors.reason" class="text-danger">{{ errors.reason }}</div>
+            <div v-if="friendReason()" class="text-success">{{ reasonSuccess }}</div>
           </div>
-          <div v-if="errors.reason" class="text-danger">{{ errors.reason }}</div>
 
           <!-- Buttons -->
           <div class="text-center">
@@ -142,12 +160,19 @@ import { ref } from 'vue'
 const formData = ref({
   username: '',
   password: '',
+  confirmPassword: '',
   isAustralian: false,
   reason: '',
   gender: '',
 })
 
 const submittedCards = ref([])
+
+const reasonSuccess = 'Great to have a friend'
+
+const friendReason = () => {
+  return /\bfriend\b/i.test(formData.value.reason || '')
+}
 
 const submitForm = () => {
   validateName(true)
@@ -180,6 +205,7 @@ const clearForm = () => {
 const errors = ref({
   username: null,
   password: null,
+  confirmPassword: null,
   resident: null,
   gender: null,
   reason: null,
@@ -216,6 +242,18 @@ const validatePassword = (blur) => {
   }
 }
 
+/**
+ * Confirm password validation function that checks if the password and confirm password fields match.
+ * @param blur: boolean - If true, the function will display an error message if the passwords do not match.
+ */
+const validateConfirmPassword = (blur) => {
+  if (formData.value.password !== formData.value.confirmPassword) {
+    if (blur) errors.value.confirmPassword = 'Passwords do not match.'
+  } else {
+    errors.value.confirmPassword = null
+  }
+}
+
 const validateResident = (blur) => {
   if (!formData.value.isAustralian) {
     if (blur) errors.value.resident = 'You must be an Australian resident.'
@@ -248,20 +286,3 @@ const validateReason = (blur) => {
   }
 }
 </script>
-
-<style scoped>
-/* .card {
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-} */
-.card-header {
-  background-color: #275fda;
-  color: white;
-  padding: 10px;
-  border-radius: 10px 10px 0 0;
-}
-.list-group-item {
-  padding: 10px;
-}
-</style>
