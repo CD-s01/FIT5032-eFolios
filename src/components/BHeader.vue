@@ -29,6 +29,9 @@
             >Firebase Register</router-link
           >
         </li>
+        <li class="nav-item">
+          <router-link to="addbook" class="nav-link" active-class="active">Add Book</router-link>
+        </li>
       </ul>
     </header>
   </div>
@@ -39,8 +42,8 @@ import { isAuthenticated, logout } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 
-function doLogout() {
-  logout()
-  router.push('/login')
-}
+// function doLogout() {
+//   logout()
+//   router.push('/login')
+// }
 </script>
