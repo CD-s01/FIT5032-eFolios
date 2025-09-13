@@ -14,10 +14,20 @@
             >About</router-link
           >
         </li>
-        <li class="nav-item">
-          <!-- <button v-if="isAuthenticated" @click="doLogout">Logout</button> -->
+        <!-- <li class="nav-item">
+          <button v-if="isAuthenticated" @click="doLogout">Logout</button>
           <a v-if="isAuthenticated" href="#" class="nav-link" @click.prevent="doLogout">Logout</a>
           <router-link v-else to="/login" class="nav-link" active-class="active">Login</router-link>
+        </li> -->
+        <li>
+          <router-link to="Firelogin" class="nav-link" active-class="active"
+            >Firebase Login</router-link
+          >
+        </li>
+        <li>
+          <router-link to="FireRegister" class="nav-link" active-class="active"
+            >Firebase Register</router-link
+          >
         </li>
       </ul>
     </header>
