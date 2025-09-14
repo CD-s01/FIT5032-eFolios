@@ -20,46 +20,59 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue'
 import db from '../firebase/init.js'
-import { collection, addDoc } from 'firebase/firestore'
+import { collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore'
 import Booklist from '../components/BookList.vue'
 
-export default {
-  setup() {
-    const isbn = ref('')
-    const name = ref('')
+const isbn = ref('')
+const name = ref('')
 
-    const addBook = async () => {
-      try {
-        const isbnNumber = Number(isbn.value)
-        if (isNaN(isbnNumber)) {
-          alert('ISBN must be a valid number')
-          return
-        }
 
-        await addDoc(collection(db, 'books'), {
-          isbn: isbnNumber,
-          name: name.value,
-        })
-
-        isbn.value = ''
-        name.value = ''
-        alert('Book added successfully!')
-      } catch (error) {
-        console.error('Error adding book:', error)
-      }
+/** ---------- CREATE ---------- */
+const addBook = async () => {
+  try {
+    const isbnNumber = Number(isbn.value)
+    if (isNaN(isbnNumber)) {
+      alert('ISBN must be a valid number')
+      return
     }
 
-    return {
-      isbn,
-      name,
-      addBook,
-    }
-  },
-  components: {
-    Booklist,
-  },
+    await addDoc(collection(db, 'books'), {
+      isbn: isbnNumber,
+      name: name.value,
+    })
+
+    isbn.value = ''
+    name.value = ''
+    alert('Book added successfully!')
+  } catch (error) {
+    console.error('Error adding book:', error)
+  }
+}
+
+/** ---------- UPDATE ---------- */
+function startEdit(row) {
+  editId.value = row.id
+  editDraft.value = { isbn: row.isbn, name: row.name }
+}
+function cancelEdit() {
+  editId.value = null
+  editDraft.value = { isbn: '', name: '' }
+}
+async function save(id) {
+  await updateDoc(doc(db, 'books', id), {
+    isbn: Number(editDraft.value.isbn),
+    name: editDraft.value.name,
+    // updatedAt: serverTimestamp(), // enable if you want
+  })
+  cancelEdit()
+}
+
+/** ---------- DELETE ---------- */
+async function remove(id) {
+  if (!confirm('Delete this book?')) return
+  await deleteDoc(doc(db, 'books', id))
 }
 </script>
