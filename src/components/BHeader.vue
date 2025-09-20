@@ -32,13 +32,16 @@
         <li class="nav-item">
           <router-link to="addbook" class="nav-link" active-class="active">Add Book</router-link>
         </li>
+        <li class="nav-item">
+          <router-link to="/logout" class="nav-link" active-class="active">Log out</router-link>
+        </li>
       </ul>
     </header>
   </div>
 </template>
 
 <script setup>
-import { isAuthenticated, logout } from '@/stores/auth'
+import { isAuthenticated } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 

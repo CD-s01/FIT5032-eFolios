@@ -22,13 +22,12 @@
 
 <script setup>
 import { ref } from 'vue'
-import db from '../firebase/init.js'
+import { db } from '@/firebase/init'
 import { collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore'
 import Booklist from '../components/BookList.vue'
 
 const isbn = ref('')
 const name = ref('')
-
 
 /** ---------- CREATE ---------- */
 const addBook = async () => {

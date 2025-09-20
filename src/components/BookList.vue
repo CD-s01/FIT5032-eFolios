@@ -10,7 +10,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import db from '../firebase/init.js'
+import { db } from '@/firebase/init'
 import { collection, query, where, getDocs, onSnapshot, orderBy, limit } from 'firebase/firestore'
 
 const books = ref([])
