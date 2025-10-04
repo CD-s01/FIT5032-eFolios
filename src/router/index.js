@@ -9,6 +9,7 @@ import FirebaseSigninView from '@/views/FirebaseSigninView.vue'
 import FirebaseRegisterView from '@/views/FirebaseRegisterView.vue'
 import AddBookView from '@/views/AddBookView.vue'
 import LogoutView from '@/views/LogoutView.vue'
+import GetBookCountView from '@/views/GetBookCountView.vue'
 
 const routes = [
   {
@@ -28,6 +29,7 @@ const routes = [
   { path: '/FireRegister', name: 'FireRegister', component: FirebaseRegisterView },
   { path: '/addbook', name: 'Addbook', component: AddBookView },
   { path: '/logout', name: 'Logout', component: LogoutView, meta: { requiresAuth: true } },
+  { path: '/GetBookCount', name: 'GetBookCount', component: GetBookCountView },
 ]
 
 const router = createRouter({
