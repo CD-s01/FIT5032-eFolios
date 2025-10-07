@@ -23,7 +23,7 @@
 <script setup>
 import { ref } from 'vue'
 import { db } from '@/firebase/init'
-import { collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore'
+import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore'
 import Booklist from '../components/BookList.vue'
 
 const isbn = ref('')
@@ -38,16 +38,38 @@ const addBook = async () => {
       return
     }
 
-    await addDoc(collection(db, 'books'), {
+    const originalName = name.value
+
+    // Add the book to Firestore
+    const docRef = await addDoc(collection(db, 'books'), {
       isbn: isbnNumber,
       name: name.value,
     })
 
+    // Listen for the update from the Firebase Function
+    let isFirstSnapshot = true
+    const unsubscribe = onSnapshot(doc(db, 'books', docRef.id), (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const updatedData = docSnapshot.data()
+
+        // Added a small delay to ensure capitalizatoin function has time to fire
+        // Skip the first snapshot (initial data before Function runs)
+        if (isFirstSnapshot) {
+          isFirstSnapshot = false
+          return
+        }
+
+        // Show the capitalized result
+        alert(`Book: "${originalName}"\n has been added successfully as:\n"${updatedData.name}"`)
+        unsubscribe() // Stop listening after getting the update
+      }
+    })
+
     isbn.value = ''
     name.value = ''
-    alert('Book added successfully!')
   } catch (error) {
     console.error('Error adding book:', error)
+    alert('Error adding book')
   }
 }
 
