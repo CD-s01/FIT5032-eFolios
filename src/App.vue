@@ -1,26 +1,25 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-import JSON from './components/JSON.vue'
-import Form from './views/HomeView.vue'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import BHeader from './components/BHeader.vue'
+
+// reactive current route from Vue Router
+const route = useRoute()
+
+// toggle header: hide when route name is exactly "CountBookAPI"
+const apiPaths = ['CountBookAPI', 'GetAllBooksAPI']
+const showHeader = computed(() => !apiPaths.includes(route.name))
 </script>
 
 <template>
-  <header>
-    <!-- <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" /> -->
-    <BHeader />
-    <div class="wrapper">
-      <!-- <HelloWorld msg="You did it!" /> -->
-    </div>
-  </header>
-
-  <main>
-    <!-- <TheWelcome /> -->
-    <!-- <JSON /> -->
-    <!-- <Form /> -->
-    <router-view></router-view>
-  </main>
+  <div class="main-container">
+    <header v-if="showHeader">
+      <BHeader />
+    </header>
+    <main class="main-box">
+      <router-view></router-view>
+    </main>
+  </div>
 </template>
 
 <style scoped>

@@ -73,3 +73,21 @@ exports.capitalizeBookData = onDocumentCreated('books/{bookId}', async (event) =
 
   console.log(`Book ${bookId} capitalized: ${capitalizedName}`)
 })
+
+exports.getAllBooks = onRequest((req, res) => {
+  cors(req, res, async () => {
+    try {
+      const booksCollection = admin.firestore().collection('books')
+      const snapshot = await booksCollection.get()
+      const books = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+
+      res.status(200).send(books)
+    } catch (error) {
+      console.error('Error retrieving books:', error.message)
+      res.status(500).send('Error retrieving books')
+    }
+  })
+})

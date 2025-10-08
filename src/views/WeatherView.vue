@@ -74,16 +74,13 @@ export default {
           await this.fetchWeatherData(url)
         },
         (err) => {
-          // Optional: surface a friendly message if location fails
           console.warn('Geolocation error:', err?.message || err)
         },
       )
     },
 
-    // Called by your <button @click="searchByCity">
     async searchByCity() {
       if (!this.city) return
-      // Using 'q' and HTTPS; you could add '&units=metric' to get °C from API
       const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
         this.city,
       )}&appid=${API_KEY}`

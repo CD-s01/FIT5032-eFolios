@@ -13,20 +13,20 @@ export default {
     }
   },
   methods: {
-    async getBookCountAPI() {
+    async getAllBooksAPI() {
       try {
-        const response = await axios.get('https://countbooks-zg6jlarueq-uc.a.run.app')
+        const response = await axios.get('https://getallbooks-zg6jlarueq-uc.a.run.app')
         this.jsondata = response.data
         this.error = null
       } catch (error) {
-        console.error('Error fetching book count:', error)
+        console.error('Error fetching all books:', error)
         this.error = error
         this.jsondata = null
       }
     },
   },
   mounted() {
-    this.getBookCountAPI()
+    this.getAllBooksAPI()
   },
 }
 </script>
