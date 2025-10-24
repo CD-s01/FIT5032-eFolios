@@ -10,7 +10,8 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
-  base: '/FIT5032-eFolios/',          // 👈 add this line
+  // Use subdirectory for GitHub Pages, root for Cloudflare Pages
+  base: process.env.VITE_BASE_PATH || '/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

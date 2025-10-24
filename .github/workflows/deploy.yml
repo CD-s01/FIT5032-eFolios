@@ -25,6 +25,7 @@ jobs:
     - name: Build
       run: npm run build
       env:
+        VITE_BASE_PATH: /FIT5032-eFolios/
         VITE_OPEN_WEATHER_API_KEY: ${{ secrets.VITE_OPEN_WEATHER_API_KEY }}
 
     - name: Deploy
