@@ -10,6 +10,7 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
+  base: '/FIT5032-eFolios/',          // 👈 add this line
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
